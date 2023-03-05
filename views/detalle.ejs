@@ -1,0 +1,79 @@
+<%- include("template/cabecera", {tituloWeb: 'Nueva marca' }) %>
+    <div class="container">
+
+        <h1>Detalles de la marca</h1>
+        <% if (error) { %>
+            <%= mensaje %>
+                <a href="/vintage" class="btn btn-dark btn-block my-2"> Volver</a>
+                <% } %>
+                    <% if (!error) { %>
+                        <form id="editar" data-id="<%= marca._id %>">
+                            <input type="number" value="<%= marca.id %>" class="form-control my-2" name="id"
+                                id="idInput">
+                            <input type="text" value="<%= marca.nombre %>" class="form-control my-2" name="nombre"
+                                id="nombreInput">
+                            <input type="text" value="<%= marca.origen %>" class="form-control my-2" name="origen"
+                                id="origenInput">
+                            <input type="text" value="<%= marca.estilo %>" class="form-control my-2" name="estilo"
+                                id="estiloInput">
+                            <input type="text" value="<%= marca.descripcion %>" class="form-control my-2"
+                                name="descripcion" id="descripcionInput">
+                            <button class="btn btn-primary btn-sm" type="submit">Actualizar</button>
+                            <button type="submit" id= "eliminar" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                        <hr>
+                        
+                        <% } %>
+    </div>
+
+    <script>
+        const formEditar = document.querySelector('#editar')
+        const btnEliminar = document.getElementById('eliminar')
+        btnEliminar.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log(btnEliminar.dataset.id)
+
+            try {
+                
+                const data = await fetch(`/vintage/${formEditar.dataset.id}`, {
+                    method: 'delete'
+                })
+                const res = await data.json()
+                console.log(res)
+                if (res.estado) {
+                    window.location.href = '/vintage'
+                } else {
+                    console.log(res)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        })
+    </script>
+
+    <script>
+        formEditar.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            const id = formEditar.elements['id'].value
+            const nombre = formEditar.elements['nombre'].value
+            const origen = formEditar.elements['origen'].value
+            const estilo = formEditar.elements['estilo'].value
+            const descripcion = formEditar.elements['descripcion'].value
+            const _id = formEditar.dataset.id
+            const data = await fetch(`/vintage/${_id }`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, nombre, origen, estilo, descripcion })
+            })
+            const res = await data.json();
+            if (res.estado) {
+                window.location.href = '/vintage'
+            } else {
+                console.log(res)
+            }
+        })
+    </script>
+
+    <%-include("template/footer") %>
